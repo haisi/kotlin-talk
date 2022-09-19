@@ -5,20 +5,21 @@ import java.time.LocalDateTime
 /**
  * Acts as entry point into our DSL
  * `inline` - at compile time this code will be pasted into the call side
+ * Required params are provided as parameters before the higher-order function
  * Last argument is a higher order function -> parenthesis are optional
  * Receiver type: dynamic "extension-functions" --- we extend the conference DSL with a function of signature (Void) -> Void
  *    where the implementation is provided at run-time.
  *    Inside the lambda we are in the "scope" of the receiver type.
- * Required params are provided as parameters before the higher-order function
  */
 inline fun conference(isImportant: Boolean, config: ConferenceDSL.() -> Unit): Conference {
     val dsl = ConferenceDSL(isImportant).apply(config)
+    // At last, we want to create an instance of our Confernce domain, by accessing the configured fields in the DSL
     return Conference(dsl.name, dsl.location).apply {
         dsl.talkList.forEach(this::addTalk)
     }
 }
 
-//@DslMarker
+@ConferenceDslMarker
 class ConferenceDSL(val isImportant: Boolean) {
 
     private val _talkList = mutableListOf<Talk>()
@@ -26,12 +27,14 @@ class ConferenceDSL(val isImportant: Boolean) {
     val talkList: List<Talk>
         get() = _talkList.toList()
 
+    // The fields we allow to configure
     lateinit var name: String
     lateinit var location: String
 
     // Refers to our inner DSL which is only accessible from the outer DSL
     val talks = TalkConfigDSL()
 
+//    @ConferenceDslMarker
     inner class TalkConfigDSL {
         private val _talkList = this@ConferenceDSL._talkList
 
@@ -87,6 +90,9 @@ class ConferenceDSL(val isImportant: Boolean) {
         operator fun Talk.unaryPlus() = _talkList.add(this)
     }
 }
+
+@DslMarker
+annotation class ConferenceDslMarker
 
 class Conference(val name: String, val location: String) {
     private val schedule = mutableListOf<Talk>()

@@ -1,0 +1,116 @@
+= Writing expressive domain specific languages in Kotlin
+:source-highlighter: highlightjs
+
+== Goals
+
+* Benefits of Domain Specific Languages (DSL)
+* Leverage advanced Kotlin language features to build DSLs
+
+[.notes]
+--
+* The goals of today's talk are:
+** learn in an abstract sense what a DSL is with its benefits
+** and how one can use Kotlin to model DSL.
+** Implicitly, we will familiarize ourselves with intermediate to advanced kotlin features such as:
+*** operator overloading
+*** type-safe builders
+*** higher-order functions
+*** receiver types
+*** context-receivers
+--
+
+
+== Why DSL?
+
+* Increases expressiveness of code
+* Reduces problem space
+* Increase discoverability
+* => Reduces barriers of entry for domain experts
+
+[.notes]
+--
+* General purpose languages by design allow you to express and thus solve essentially any problem
+* However, using the lowest common denominator to model your code has adverse effects readability and maintainability
+* So by developing a small little language specific to our problem, i.e. a *DOMAIN SPECIFIC LANGUAGE*
+* we _increase_ the expressiveness of our code by using terms from our domain
+* and by modelling only what our domain allows us to do we _reduce the problem space_
+* Thus, we increase the discoverability of our domain's functionality.
+* Lastly, a DSL can be judged by how easy it is for a domain expert to understand the code.
+Ideally, code written in our DSL should read somewhat like prose text.
+--
+
+== Example
+
+[source,kotlin,highlight='1|2..8|6|9|10..12|13']
+----
+basket {
+    val canCheckout = totalBasketValue {
+        isLessThan(minPurchaseAmount)
+    }
+    if (!canCheckout) {
+        checkCheckoutIsDisabled()
+        return@basket
+    }
+    items {
+        first {
+            incraseQuantityBy(5)
+        }
+        decreaseQuantityOf(last()) by 1
+    }
+}
+----
+
+[.notes]
+--
+* Let's see an example of a DSL
+* Here I have one for writing complex E2E tests
+* I've written something very similar to this during my time at migros online
+* I wrote large parts of their new Android app
+* and the End-2-End test-suite.
+* I modelled every screen as an entry point to a DSL, which exposed the possible interactions a user or specifically a test ---
+* meaning from a human perspective --- can do on a screen
+* I call these entries point robots and was able to chain them to automate whole user-interaction through the app
+* // models all interactions with the basket view
+* // dynamically interact with unknown state &  // make possible assertions
+* // exposes interactions with items in basket
+* // // approach (a)
+* // // approach (b)
+* I can highly recommend this talk by Jake Wharton
+* The lessons learned are applicable for integration test on all platforms
+--
+
+[transition-speed=none]
+== Example
+
+[source,kotlin,linenums]
+----
+basket {
+    val canCheckout = totalBasketValue {
+        isLessThan(minPurchaseAmount)
+    }
+    if (!canCheckout) {
+        checkCheckoutIsDisabled()
+        return@basket
+    }
+    items {
+        first {
+            incraseQuantityBy(5)
+        }
+        decreaseQuantityOf(last()) by 1
+    }
+}
+----
+
+* https://youtu.be/7Y3qIIEyP5c[Instrumentation Testing Robots by Jake Wharton] (YouTube / https://academy.realm.io/posts/kau-jake-wharton-testing-robots[Slides])
+
+[.notes]
+--
+* I can highly recommend this talk by Jake Wharton
+* The lessons learned are applicable for integration test on all platforms
+--
+
+== Show me the code 👨‍💻
+
+* Build a DSL to configure a Conference domain
+* Step-for-step jump through code
+* Highlight the patterns

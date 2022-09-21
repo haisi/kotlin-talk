@@ -1,0 +1,7 @@
+
+* [ ] Domain
+* [ ] Java way
+* [ ] Entry point -> returns configured domain
+* [ ] Required fields
+* [ ] Required fields
+

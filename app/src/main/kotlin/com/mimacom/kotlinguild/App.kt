@@ -12,7 +12,7 @@ fun main() {
 
     // TODO context receiver with location lookup
 
-    conference(isImportant = true) {
+    val result: Conference = conference(isImportant = true) {
         name = "Kotlin Guild"
         location = "MS Teams"
 
